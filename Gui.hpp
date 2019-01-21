@@ -20,12 +20,14 @@ private:
     static SDL_Window *_window;
     static TTF_Font *_font;
     static SDL_Texture *_text;
+    SDL_Surface* _textSurface;
     SDL_Color   _textColor;
     SDL_Event   _event;
     std::vector<SDL_Texture*> _textureButton;
     SDL_Rect    _bcR;//struct position of Button
     SDL_Rect    _tcR;//struct position of Text
     std::string _dirPrj;
+    std::string _nS;
     Gui();
     ~Gui();
     void    drawNameSong(std::string & songName);

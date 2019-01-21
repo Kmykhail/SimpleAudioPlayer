@@ -13,7 +13,7 @@
 const char g_play_path[] = "/Picture/play.png";
 const char g_stop_path[] = "/Picture/stop.png";
 const char g_next_path[] = "/Picture/next_1.png";
-const char g_previous_path[] = "/Picture/previos.png";
+const char g_previous_path[] = "/Picture/previous.png";
 const char g_font[] = "/Fonts/AbyssinicaSIL-R.ttf";
 const int g_weight = 400;
 const int g_height = 400;
@@ -74,26 +74,41 @@ void Gui::InitGui() {
         std::cout << TTF_GetError() << std::endl;
         exit(1);
     }
-    /************INIT TEXTURE FOR PLA"/Fonts/AbyssinicaSIL-R.ttf"YER************/
+    /************INIT TEXTURE FOR PLA"/Fonts/AbyssinicaSIL-R.ttf************/
     _textureButton.resize(4);
-    _textureButton[0] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPrj + g_stop_path).c_str()));//Stop
-    _textureButton[1] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPrj + g_play_path).c_str()));//Play
-    _textureButton[2] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPrj + g_previous_path).c_str()));//Previous
-    _textureButton[3] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPrj + g_next_path).c_str()));//Next
+    SDL_Surface* p1 = IMG_Load((_dirPrj + g_stop_path).c_str());
+    SDL_Surface* p2 = IMG_Load((_dirPrj + g_play_path).c_str());
+    SDL_Surface* p3 = IMG_Load((_dirPrj + g_previous_path).c_str());
+    SDL_Surface* p4 = IMG_Load((_dirPrj + g_next_path).c_str());
+    _textureButton[0] = SDL_CreateTextureFromSurface(renderer, p1);//Stop
+    _textureButton[1] = SDL_CreateTextureFromSurface(renderer, p2);//Play
+    _textureButton[2] = SDL_CreateTextureFromSurface(renderer, p3);//Previous
+    _textureButton[3] = SDL_CreateTextureFromSurface(renderer, p4);//Next
+    SDL_FreeSurface(p1);
+    SDL_FreeSurface(p2);
+    SDL_FreeSurface(p3);
+    SDL_FreeSurface(p4);
     /*************INIT TEXT******************/
     _textColor = {255, 255, 255, 0};
+    _textSurface = nullptr;
+    _nS = "None";
 }
 
 void Gui::drawNameSong(std::string & songName) {
-    SDL_Surface* textSurface = TTF_RenderText_Solid(_font, songName.c_str(), _textColor);
-    _text = SDL_CreateTextureFromSurface(renderer, textSurface);
-    if (!_text){
-        std::cerr << SDL_GetError() << std::endl;
-        exit(-1);
+    if (_nS != songName){
+        _nS = songName;
+        if (_textSurface){
+            SDL_FreeSurface(_textSurface);
+        }
+        _textSurface = TTF_RenderText_Solid(_font, _nS.c_str(), _textColor);
+        _text = SDL_CreateTextureFromSurface(renderer, _textSurface);
+        if (!_text){
+            std::cerr << SDL_GetError() << std::endl;
+            exit(-1);
+        }
+        _tcR = {100, 100, _textSurface->w, _textSurface->h};
     }
-    _tcR = {100, 100, textSurface->w, textSurface->h};
     SDL_RenderCopy(renderer, _text, nullptr, &_tcR);
-    SDL_FreeSurface(textSurface);
 }
 
 void Gui::DrawGui(std::string songName) {
@@ -183,6 +198,7 @@ char Gui::CatchEvent(char currKey) {
 }
 
 void Gui::CleanWindow() {
+    SDL_FreeSurface(_textSurface);
     SDL_DestroyWindow(_window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();

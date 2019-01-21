@@ -49,6 +49,10 @@ void MultimediaObj::Init() {
 
 void MultimediaObj::MainLoop() {
     int i = 0;
+    int const FPS = 60;
+    uint32_t  frameStart;
+    int frameTime;
+    int const frameDealy = 3000 / FPS;
     for(auto it = _playList.begin(); it != _playList.end(); ){
         if (!HandlEvent()){
             break;
@@ -63,8 +67,13 @@ void MultimediaObj::MainLoop() {
                 break;
             i = 1;
         }
+        frameStart = SDL_GetTicks();
         _guiPtr->DrawGui((*it)->GetSongName());
         _guiPtr->RenderGui();
+        frameTime = SDL_GetTicks() - frameStart;
+        if (frameDealy > frameTime){
+            SDL_Delay(frameDealy - frameTime);
+        }
         _media.Play(*it);
     }
     Clean();
@@ -87,10 +96,7 @@ void MultimediaObj::Render() {
 
 void MultimediaObj::Clean() {
     _guiPtr->CleanWindow();
-    //TODO delete audiodata from container _playList
-//    for (auto it = _playList.begin(); it != _playList.end() ; it++) {
-//        _playList.erase(it);
-//    }
+    for(auto it : _playList){
+        delete(it);
+    }
 }
-
-
