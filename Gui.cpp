@@ -14,12 +14,15 @@ const char g_play_path[] = "/Picture/play.png";
 const char g_stop_path[] = "/Picture/stop.png";
 const char g_next_path[] = "/Picture/next_1.png";
 const char g_previous_path[] = "/Picture/previos.png";
+const char g_font[] = "/Fonts/AbyssinicaSIL-R.ttf";
 const int g_weight = 400;
 const int g_height = 400;
 
 Gui* Gui::_inst = nullptr;
 SDL_Renderer* Gui::renderer = nullptr;
 SDL_Window*     Gui::_window = nullptr;
+TTF_Font* Gui::_font = nullptr;
+SDL_Texture*    Gui::_text = nullptr;
 
 Gui* Gui::getInstance() {
     if (!_inst){
@@ -32,10 +35,17 @@ Gui::Gui() {}
 Gui::~Gui() {}
 
 void Gui::InitGui() {
+    /****************INIT SDL**********************/
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
-        std::cout << "Trouble with init SDL" << std::endl;
+        std::cerr << SDL_GetError() << std::endl;
         exit(-1);
     }
+    /****************INIT TTF_SDL**********************/
+    if (TTF_Init() < 0){
+        std::cout << TTF_GetError() << std::endl;
+        exit(-1);
+    }
+    /****************INIT WINDOW**********************/
     _window = SDL_CreateWindow(
             "Multimedia",
             SDL_WINDOWPOS_CENTERED,
@@ -53,24 +63,42 @@ void Gui::InitGui() {
         std::cout << "Trouble wih render" << std::endl;
         return;
     }
-    SDL_SetRenderDrawColor(renderer, 255, 90, 122, 255);
+    SDL_SetRenderDrawColor(renderer, 100, 100, 122, 255);
     char path[4096];
-    _dirPicture = getwd(path);
-    size_t  n = _dirPicture.rfind('/');
-    _dirPicture.resize(n);
-    /************INIT TEXTURE FOR PLAYER************/
+    _dirPrj = getwd(path);
+    size_t  n = _dirPrj.rfind('/');
+    _dirPrj.resize(n);
+    /************INIT FONT FOR TEXT************/
+    _font = TTF_OpenFont((_dirPrj + g_font).c_str(), 20);
+    if (!_font){
+        std::cout << TTF_GetError() << std::endl;
+        exit(1);
+    }
+    /************INIT TEXTURE FOR PLA"/Fonts/AbyssinicaSIL-R.ttf"YER************/
     _textureButton.resize(4);
-    _textureButton[0] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPicture + g_stop_path).c_str()));//Stop
-    _textureButton[1] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPicture + g_play_path).c_str()));//Play
-    _textureButton[2] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPicture + g_previous_path).c_str()));//Previous
-    _textureButton[3] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPicture + g_next_path).c_str()));//Next
-    /*************INIT MOUSECLICK******************/
-    _mouseClick.first = -1;//ON Y
-    _mouseClick.second = -1;//ON X
+    _textureButton[0] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPrj + g_stop_path).c_str()));//Stop
+    _textureButton[1] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPrj + g_play_path).c_str()));//Play
+    _textureButton[2] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPrj + g_previous_path).c_str()));//Previous
+    _textureButton[3] = SDL_CreateTextureFromSurface(renderer, IMG_Load((_dirPrj + g_next_path).c_str()));//Next
+    /*************INIT TEXT******************/
+    _textColor = {255, 255, 255, 0};
 }
 
-void Gui::DrawGui() {
+void Gui::drawNameSong(std::string & songName) {
+    SDL_Surface* textSurface = TTF_RenderText_Solid(_font, songName.c_str(), _textColor);
+    _text = SDL_CreateTextureFromSurface(renderer, textSurface);
+    if (!_text){
+        std::cerr << SDL_GetError() << std::endl;
+        exit(-1);
+    }
+    _tcR = {100, 100, textSurface->w, textSurface->h};
+    SDL_RenderCopy(renderer, _text, nullptr, &_tcR);
+    SDL_FreeSurface(textSurface);
+}
+
+void Gui::DrawGui(std::string songName) {
     SDL_RenderClear(renderer);
+    drawNameSong(songName);
     _bcR.w = _bcR.h = 100;
     _bcR.y = 300;
     for (int i = 0; i < _textureButton.size(); ++i) {
@@ -83,9 +111,7 @@ void Gui::DrawGui() {
         SDL_RenderCopy(renderer, _textureButton[i], nullptr, &_bcR);
     }
 }
-void Gui::RenderGui() {
-    SDL_RenderPresent(renderer);
-}
+void Gui::RenderGui() {SDL_RenderPresent(renderer);}
 
 char Gui::CatchEvent(char currKey) {
     char key = currKey;

@@ -4,6 +4,7 @@
 
 #include "AudioData.hpp"
 #include "sdl_header.h"
+#include <regex>
 
 AudioData::AudioData() noexcept{}
 
@@ -18,6 +19,8 @@ AudioData::AudioData(std::string &fileName) {
     }
     _start = wavStart;
     _length = wavLength;
+    _songName = fileName.substr(fileName.rfind('/') + 1);
+    _songName = std::regex_replace(_songName, std::regex("[.]wav"), "");
 }
 
 AudioData::~AudioData() {
@@ -28,3 +31,4 @@ AudioData::~AudioData() {
 uint8_t* AudioData::GetWavStart() const { return _start;}
 uint32_t AudioData::GetWavLength() const { return _length;}
 void AudioData::SetWavLength(uint32_t val) {_length = val;}
+std::string AudioData::GetSongName() const { return _songName;}

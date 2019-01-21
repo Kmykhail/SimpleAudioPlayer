@@ -13,8 +13,10 @@ public:
     uint8_t * GetWavStart() const;
     uint32_t  GetWavLength() const;
     void  SetWavLength(uint32_t val);
+    std::string GetSongName() const;
 private:
     uint8_t *_start;
     uint32_t _length;
+    std::string _songName;
 };
 

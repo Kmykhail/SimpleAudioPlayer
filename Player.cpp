@@ -62,9 +62,6 @@ void Player::Play(AudioData *track) {
         _run = false;
     }
     else if (_key == 'd'){//Next song
-        if (_flag == 1){
-            PlaySound(track, _lengthTrack);
-        }
         StopSound();
         _run = false;
         _key = 's';

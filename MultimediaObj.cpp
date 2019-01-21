@@ -37,10 +37,10 @@ void MultimediaObj::OpenSoundDir() {
 }
 
 void MultimediaObj::Init() {
+    OpenSoundDir();
     _guiPtr = Gui::getInstance();
     _guiPtr->InitGui();
-    _guiPtr->DrawGui();
-    OpenSoundDir();
+    _guiPtr->DrawGui(_playList.front()->GetSongName());
     _guiPtr->RenderGui();
     _media.InitPlayer();
     MainLoop();
@@ -63,18 +63,18 @@ void MultimediaObj::MainLoop() {
                 break;
             i = 1;
         }
-        _guiPtr->DrawGui();
+        _guiPtr->DrawGui((*it)->GetSongName());
         _guiPtr->RenderGui();
         _media.Play(*it);
     }
     Clean();
 }
-//s - play; p - pause; d - next;
+
 int MultimediaObj::HandlEvent() {
     char sym = _guiPtr->CatchEvent(_media.GetKey());
     if (sym == 'q')
         return 0;
-    if (sym == 's' || sym == 'p' || sym == 'd'
+    if (sym == 's' || sym == 'p' || sym == 'd'//s - play, p  pause, a - previous, d - next
     || sym == 'a' || sym == ' ') {
         _media.SetKey(sym);
     }
