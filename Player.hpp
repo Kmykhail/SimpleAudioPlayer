@@ -11,6 +11,10 @@
 class Player {
 public:
     Player() noexcept;
+    Player(const Player&) = delete;
+    Player(const Player&&) = delete;
+    Player &operator=(const Player&) = delete;
+    Player &operator=(const Player&&) = delete;
     ~Player();
     void    InitPlayer();
     void    Play(AudioData* track);
