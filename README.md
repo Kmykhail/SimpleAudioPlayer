@@ -1,5 +1,5 @@
 # SimpleAudioPlayer
-Only wav format :(
+Only wav format :(</br>
 please install SDL:</br>
 
 sudo apt-get install libsdl2-dev</br>
