@@ -2,7 +2,7 @@
 #include "MultimediaObj.hpp"
 
 int main() {
-    MultimediaObj *mptr = MultimediaObj::getInstance();
-    mptr->Init();
+    MultimediaObj mptr;
+    mptr.Init();
     return 0;
 }

@@ -55,17 +55,17 @@ void Gui::InitGui() {
             SDL_WINDOW_SHOWN
     );
     if (!_window){
-        std::cout << "Error Window: " << &SDL_Error << std::endl;
+        std::cerr << SDL_GetError() << &SDL_Error << std::endl;
         exit(-1);
     }
     renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) {
-        std::cout << "Trouble wih render" << std::endl;
+        std::cerr << SDL_GetError() << std::endl;
         return;
     }
     SDL_SetRenderDrawColor(renderer, 100, 100, 122, 255);
     char path[4096];
-    _dirPrj = getwd(path);
+    _dirPrj = get_current_dir_name();
     size_t  n = _dirPrj.rfind('/');
     _dirPrj.resize(n);
     /************INIT FONT FOR TEXT************/
@@ -106,7 +106,7 @@ void Gui::drawNameSong(std::string & songName) {
             std::cerr << SDL_GetError() << std::endl;
             exit(-1);
         }
-        _tcR = {100, 100, _textSurface->w, _textSurface->h};
+        _tcR = {150, 100, _textSurface->w, _textSurface->h};
     }
     SDL_RenderCopy(renderer, _text, nullptr, &_tcR);
 }
@@ -132,31 +132,24 @@ char Gui::CatchEvent(char currKey) {
     char key = currKey;
     while(SDL_PollEvent(&_event)){
         if (_event.type == SDL_QUIT){
-            std::cout << "EXIT" << std::endl;
-            return 'q';
+            return 'q';//EXIT MOUSE ON X-button
         }
         int x = 0;
         int y = 0;
         if (_event.type == SDL_KEYDOWN){
             switch (_event.key.keysym.sym){
                 case SDLK_ESCAPE:
-                    std::cout << "EXIT" << std::endl;
-                    return 'q';
+                    return 'q';//EXIT ESCAPE
                 case SDLK_s:
-                    std::cout << "play" << std::endl;
-                    return 's';
+                    return 's';//PLAY
                 case SDLK_p:
-                    std::cout << "pause" << std::endl;
-                    return 'p';
+                    return 'p';//PAUSE
                 case SDLK_a:
-                    std::cout << "previous song" << std::endl;
-                    return 'a';
+                    return 'a';//PREVIOUS
                 case SDLK_d:
-                    std::cout << "!!next song" << std::endl;
-                    return 'd';
+                    return 'd';//NEXT
                 case SDLK_SPACE:
-                    std::cout << "Stop song" << std::endl;
-                    return ' ';
+                    return ' ';//STOP
                 default:
                     return (currKey == 'p') ? currKey : 's';
             }
@@ -166,9 +159,7 @@ char Gui::CatchEvent(char currKey) {
             y = _event.motion.y;
         }
         if (_event.type == SDL_MOUSEBUTTONDOWN) {
-            //If the left mouse button is let go...
             if (_event.button.button == SDL_BUTTON_LEFT) {
-                //get the mouse offsets
                 x = _event.button.x;
                 y = _event.button.y;
                 if (y >= 300) {
@@ -176,16 +167,13 @@ char Gui::CatchEvent(char currKey) {
                         return ' ';
                     }
                     if (PLAY_BUTTON(x)) {
-                        std::cout << "MOUSE PLAY" << std::endl;
-                        return (key == 's') ? 'p' : 's';
+                        return (key == 's') ? 'p' : 's';//MOUSE PLAY/PAUSE
                     }
                     if (PREVIOUS_BUTTON(x)) {
-                        std::cout << "MOUSE PREVIOUS" << std::endl;
-                        return 'a';
+                        return 'a';//MOUSE PREVIOUS
                     }
                     if (NEXT_BUTTON(x)) {
-                        std::cout << "MOUSE NEX" << std::endl;
-                        return 'd';
+                        return 'd';//OUSE NEXT
                     }
                 }
             }
@@ -201,5 +189,6 @@ void Gui::CleanWindow() {
     SDL_FreeSurface(_textSurface);
     SDL_DestroyWindow(_window);
     SDL_DestroyRenderer(renderer);
+    _dirPrj.clear();
     SDL_Quit();
 }

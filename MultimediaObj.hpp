@@ -10,7 +10,8 @@
 
 class MultimediaObj {
 public:
-    static MultimediaObj * getInstance();
+    MultimediaObj();
+    ~MultimediaObj();
     void Init();
     int HandlEvent();
     void Update();
@@ -24,8 +25,6 @@ private:
     void    Clean();
     void MainLoop();
     void OpenSoundDir();
-    MultimediaObj();
-    ~MultimediaObj();
     MultimediaObj(const MultimediaObj&) = delete;
     MultimediaObj(MultimediaObj&&) = delete;
     MultimediaObj & operator=(const MultimediaObj&) = delete;

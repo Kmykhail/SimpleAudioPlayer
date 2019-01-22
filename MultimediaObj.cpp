@@ -7,17 +7,9 @@
 #include "MultimediaObj.hpp"
 #include <iterator>
 
-MultimediaObj * MultimediaObj::_inst = nullptr;
-
 MultimediaObj::MultimediaObj() {}
 MultimediaObj::~MultimediaObj() {}
 
-MultimediaObj* MultimediaObj::getInstance() {
-    if (!_inst){
-        _inst = new MultimediaObj;
-    }
-    return _inst;
-}
 
 void MultimediaObj::OpenSoundDir() {
     _pathDir = get_current_dir_name();
@@ -58,18 +50,18 @@ void MultimediaObj::MainLoop() {
             break;
         }
         if (_media.GetKey() == 'a'){
-            i = (it !=  _playList.begin()) ? -1 : 0;
+            i = (it != _playList.begin()) ? -1 : (_playList.size() - 1);
         }
         if (!_media.isRuning() && !_media.GetStop()){
-            std::cout << "Key: " << _media.GetKey() << " I: " << i  << std::endl;
             std::advance(it, i);
-            if (it == _playList.end())
-                break;
+            if (it == _playList.end()) {
+                it = _playList.begin();
+            }
             i = 1;
         }
         frameStart = SDL_GetTicks();
         _guiPtr->DrawGui((*it)->GetSongName());
-        _guiPtr->RenderGui();
+        Render();
         frameTime = SDL_GetTicks() - frameStart;
         if (frameDealy > frameTime){
             SDL_Delay(frameDealy - frameTime);

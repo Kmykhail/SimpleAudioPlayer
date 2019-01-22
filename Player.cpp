@@ -5,7 +5,9 @@
 #include "Player.hpp"
 
 Player::Player() noexcept : _run(false), _flag(0), _key(0), _stop(false), _lengthTrack(0), _buffTrack(0){}
-Player::~Player() {}
+Player::~Player() {
+    SDL_CloseAudioDevice(_device);
+}
 
 void Player::InitPlayer() {
     _key = ' ';
@@ -31,7 +33,6 @@ void Player::Play(AudioData *track) {
         }
         else if (!_lengthTrack && !_run){
             if (_buffTrack){
-                track->SetWavLength(_buffTrack);
                 _buffTrack = 0;
             }
             PlaySound(track, _lengthTrack);
@@ -45,7 +46,7 @@ void Player::Play(AudioData *track) {
     else if (_key == 'p' && !_flag && !_stop){//Pause song
         if (_lengthTrack){
             _flag = 1;
-            PauseSound(track);
+            PauseSound();
             _buffTrack = track->GetWavLength();
             track->SetWavLength(0);
         }
@@ -91,7 +92,7 @@ void Player::PlaySound(AudioData* track, uint32_t &pl) {
     SDL_UnlockAudioDevice(_device);
 }
 
-void Player::PauseSound(AudioData* track) {
+void Player::PauseSound() {
     SDL_LockAudioDevice(_device);
     SDL_PauseAudioDevice(_device, _flag);
     SDL_UnlockAudioDevice(_device);

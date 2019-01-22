@@ -20,10 +20,9 @@ public:
     bool GetStop() const;
 
     SDL_AudioDeviceID getDevice() const{ return _device;}
-    void    CreatePlaylist(std::string path);
 private:
     void PlaySound(AudioData*, uint32_t &pl);
-    void PauseSound(AudioData*);
+    void PauseSound();
     bool isPaused();
     void StopSound();
     SDL_AudioDeviceID _device;

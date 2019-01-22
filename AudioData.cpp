@@ -24,7 +24,6 @@ AudioData::AudioData(std::string &fileName) {
 }
 
 AudioData::~AudioData() {
-    std::cout << "FReee" << std::endl;
     SDL_FreeWAV(_start);
 }
 
