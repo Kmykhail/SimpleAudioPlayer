@@ -1,7 +1,8 @@
 # SimpleAudioPlayer
 Only wav format :(
 
-#mkdir build
-#cd build 
-#cmake ..
-#make
+#mkdir build</br>
+#cd build </br>
+#cmake ..</br>
+#make</br>
+#run
